@@ -1,0 +1,91 @@
+/* reset */
+body , ul, li {margin: 0;padding: 0;}
+h1, h2, h3, body {color: white;}
+body {
+	background-color: #222266;
+    padding-left: 1em;
+    padding-right: 1em;
+    padding-bottom: 12em;
+}
+
+form {
+	padding: 24px;
+}
+button {
+    width: 22em;
+    height: 50px;
+    border-width: 6px;
+    border-color: white;
+    border-radius: 12px;
+    border-style: solid;
+    margin: 12px;
+    background-color: black;
+    color: white;
+    font-family: "Lucida Console", "Courier New", monospace;
+    font-weight: bold;
+    font-size: 1em
+}
+
+form.textbox {
+	background-color: white;
+	color: black;
+	width: 100%;
+	min-height: 80px;
+	margin: 12px;
+	font-family: "Lucida Console", "Courier New", monospace;
+	font-weight: bold;
+	font-size: 1.4em;
+	box-shadow: 10px 5px 5px 10px black;
+	max-width: 95%;
+}
+
+ul {
+	padding: 24px;
+	font-family: "Lucida Console", "Courier New", monospace;
+	font-weight: normal;
+	font-size: 0.7em;
+	color: black;
+}
+
+ul.sub1 {
+	list-style-type: square;
+	padding: 0;
+	padding-left: 24px;
+	font-size: 1em;
+	color: #aa5555
+}
+
+img {
+	max-width: 500px;
+	padding: 24px;
+	padding-right: 0px;
+}
+
+iframe {
+	width: 900px;
+	min-width: 400px;
+	height: 800px;
+}
+
+pre code {
+  background-color: #eee;
+  border: 1px solid #999;
+  display: inline-block;
+  padding: 20px;
+  color: #a11;
+  font-weight: normal;
+}
+code {
+background-color: #eee;
+  
+  color: #a11;
+  font-weight: normal;
+}
+
+.help {
+
+	color: #000;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 18px;
+	
+}
