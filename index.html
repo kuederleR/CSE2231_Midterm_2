@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="data/style.css">
+    </head>
+    <body>
+        
+        <h1>CSE 2231 Midterm 2 Review</h1>
+        <h3>Click Heading Titles to go to Lecture Slides.</h3>
+        Important to remember: <br>
+        Correspondence is a function that relates concrete state space to abstract state space. <br>
+        Convention is a statement that must always hold true in this. <br>
+        Understanding these and reading contracts may be important for this exam.<br>
+    <form style="padding-left: 12px;" target="_blank" action="http://web.cse.ohio-state.edu/software/2231/web-sw2/extras/slides/13.SortingMachine.pdf">
+        <button type="submit">SortingMachine Specs</button>
+    </form>
+	<form class="textbox">
+		<ul>
+			<li>
+				The SortingMachine component family allows you to add elements of type T to a
+collection of such elements, and then to remove them one at a time in sorted order according to a client-supplied ordering
+			<ul class="sub1"><li> Queue and Stack support removal in FIFO and LIFO order, respectively </li></ul>
+			</li>
+			
+		</ul>
+		<img src="data/sm9.png">
+	<img src="data/sm15.png">
+	</form>
+	
+	
+	<form class="textbox">
+		sortingMachine Kernel Methods
+		<ul>
+			<li>
+				add(T x) Adds x to the contents of this.
+				<ul class="sub1">
+				<li>Parameters: 
+				x: the element to be added</li>
+				<li>Updates: 
+				this.contents</li>
+				<li>Requires:
+				this.insertion_mode</li>
+				<li>Ensures:
+				this.contents = #this.contents union {x}
+				</ul>
+			</li>
+			<li>
+				changeToExtractionMode() Changes the mode of this from insertion to extraction.
+				<ul class="sub1">
+				<li>Updates: this.insertion_mode</li>
+				<li>Requires: this.insertion_mode</li>
+				<li>Ensures: not this.insertion_mode</li>
+				</ul>
+			</li>
+			<li>
+				T removeFirst() Removes and returns some "first" ("smallest") entry from the contents of this.
+				<ul class="sub1">
+				<li>Returns: the entry removed</li>
+				<li>Updates: this.contents</li>
+				<li>Requires: not this.insertion_mode  and this.contents /= {}</li>
+				<li>Ensures: removeFirst is in #this.contents  
+				and for all x: T where (x is in #this.contents)
+				(this.ordering(removeFirst, x))  and 
+				this.contents = #this.contents \ {removeFirst}</li>
+				</ul>
+			</li>
+			<li>
+				boolean isInInsertionMode() Reports whether this is in insertion mode.
+				<ul class="sub1">
+				<li>Returns: true iff this is in insertion mode</li>
+				<li>Ensures: isInInsertionMode = this.insertion_mode</li>
+				</ul>
+			</li>
+			<li>
+				Comparator<T> order() Reports Comparator being used for sorting by this.
+				<ul class="sub1">
+				<li>Returns: Comparator used for sorting</li>
+				<li>Ensures: order = [Comparator used in the constructor call that created this]</li>
+				</ul>
+			</li>
+			<li>
+				int size() Reports the number of entries in this.
+				<ul class="sub1">
+				<li>Returns: the (multiset) size of this.contents</li>
+				<li>Ensures: size = |this.contents|</li>
+				</ul>
+			</li>
+		</ul>
+		
+	</form>
+
+    <form style="padding-left: 108px;" target="_blank" action="http://web.cse.ohio-state.edu/software/2231/web-sw2/extras/slides/14.Heaps-Heapsort.pdf">
+        <button type="submit">Heaps & Heap Sort</button>
+    </form>
+    <form class="textbox">
+    	Heaps (log time)
+    	<ul>
+    		<li>A heap is a binary tree of T that satisfies two properties:
+    			<ul class="sub1">
+    				<li>Global shape property: it is a complete binary tree</li>
+    				<li>Local ordering property: the label in each node is "smaller than or equal to" the label in each of its child nodes</li>
+    			
+    			</ul>
+    		</li>
+    		<li>In a complete binary tree, all levels are full except possibly the last.</li>
+    		<li>All labels in a heap are not necessarily unique.</li>
+    		
+    	</ul>
+    	<img src="data/hs11.png">
+    	<ul>
+    		<li>A heap can be used to represent the values in a SortingMachine, as follows:
+    			<ul class="sub1">
+    				<li>In changeToExtractionMode, arrange all the values into a heap</li>
+    				<li>In removeFirst, remove the root, and adjust the slightly mutilated heap to make it a heap again</li>
+    			
+    			</ul>
+    		</li>
+    		
+    		
+    	</ul>
+    	<hr>
+    	How removeFirst Can Work
+    	<ul>
+    		<li>If the root is the only node in the heap, then after removing it, what remains is already a heap; nothing left to do</li>
+    		<li>Otherwise, the root is removed and replaced with the last node on the bottom level, 
+    		and the new root is sifted down into place, being swapped with its smaller child.</li>
+    	</ul>
+    	<img src="data/hs26.png">
+    	<img src="data/hs28.png">
+    	<img src="data/hs31.png">
+    	<br>
+    	To heapify a complete BST, recursively heapify left and right sub-trees, then sift down the root. 
+    	<hr>
+    	siftDown(T[] array, int top, int last) code:
+    	<pre>
+    	<code>
+    	if (array.length > 1) {
+            // Set the index of left and right in relation to the root.
+            int leftIndex = 2 * top + 1;
+            int rightIndex = 2 * top + 2;
+            // I declared root for simplicity
+            T root = array[top];
+            // Make sure the right node actually exists.
+            if (rightIndex <= last) {
+                // Set smallerIndex to index of whichever child is smallest.
+                int smallerIndex = leftIndex;
+                int largerIndex = rightIndex;
+                if (order.compare(array[leftIndex], array[rightIndex]) > 0) {
+                    smallerIndex = rightIndex;
+                    largerIndex = leftIndex;
+                }
+                // Move smaller node up if it is smaller than root.
+                if (order.compare(root, array[smallerIndex]) > 0) {
+                    exchangeEntries(array, top, smallerIndex);
+                }
+                // SiftDown the left and right nodes.
+                siftDown(array, leftIndex, last, order);
+                siftDown(array, rightIndex, last, order);
+            }
+            //We might still need to sift if right node doesn't exist.
+            else if (leftIndex <= last) {
+                T leftHeap = array[leftIndex];
+                // Swap leftHeap with root if root is greater.
+                if (order.compare(root, leftHeap) > 0) {
+                    exchangeEntries(array, top, leftIndex);
+                }
+            }
+        }
+    	<div class="help">
+    		Notes: 
+    		rightIndex = 2 * top + 1
+    		leftIndex = 2 * top + 2
+    		
+    		Check the root of the smaller child and swap that with the parent root.
+    			Then recursively siftDown children. 
+    	
+    	</div>
+    	</code>
+    	</pre>
+    </form>
+
+
+    <form style="padding-left: 204px;" target="_blank" action="http://web.cse.ohio-state.edu/software/2231/web-sw2/extras/slides/14a.More-About-Heaps.pdf">
+        <button type="submit">More About Heaps</button>
+    </form>
+	
+	<form class="textbox">
+	<div class="help">
+		Be sure to know what a complete BT is. It is a tree where each node has no more
+			than two subtrees and is filled from left to right. 
+	</div>
+		<img src="data/mah2.png">
+		<img src="data/mah3.png">
+		<img src="data/mah9.png">
+		<img src="data/mah25.png">
+	</form>
+
+    <form style="padding-left: 12px;" target="_blank" action="http://web.cse.ohio-state.edu/software/2231/web-sw2/extras/slides/15.Linked-Data-Structures-I.pdf">
+        <button type="submit">Linked Data Structures I</button>
+    </form>
+
+	<form class="textbox">
+		<img src="data/LDS1-6.png">
+		<img src="data/LDS1-7.png">
+		<hr>
+		<ul>
+		<li>In our singly-linked list examples, each node had two properties: Their data and next node.</li>
+		<li>We use a SMART NODE at the beginning which has the following benefits:
+		<ul class="sub1">
+		<li>Marginally increased speed of operations</li>
+		<li>Increased data structure robustness (no null pointer for end case)</li>
+		</li>
+		</ul>
+		
+		</ul>
+		<img src="SLLI17.png"><br>
+		Note: The term smart node is just a play on the common name: 'Dummy node'. Also, 'Sentinel node' is often used for this type. 
+		
+		<hr>
+		In List, there are two smart nodes (one more at the end) in order to enable handling of special case in addRightFront and removeRightFront. 
+	</form>
+
+    <form style="padding-left: 12px;" target="_blank" action="http://web.cse.ohio-state.edu/software/2231/web-sw2/extras/slides/16.Linked-Data-Structures-II.pdf">
+        <button type="submit">Linked Data Structures II</button>
+    </form>
+    <form class="textbox">
+    	<img src="data/SLLII2.png">
+    	<embed src="data/SLLII.pdf" width="500" height="375" type="application/pdf">
+    	<br>
+    	What's new?
+    	<ul>
+    		<li>Unlike a singly-linked list, a doubly-linked list can sequentially access in both the forward
+    			AND backward directions.
+    			<ul class="sub1">
+    			<li> This is done by having another property of each node.</li>
+    			<li>Each node also has a PREVIOUS NODE element.</li>
+    			</ul>
+    	</ul>
+    </form>
+
+
+    <form style="padding-left: 12px;" target="_blank" action="http://web.cse.ohio-state.edu/software/2231/web-sw2/extras/slides/17.Standard-Methods.pdf">
+        <button type="submit">Implementing the Standard Methods</button>
+    </form>
+    
+    <form class="textbox">
+    	TF newInstance()
+    	<ul><li>
+    		Returns a new object with the same DYNAMIC type as this, having an initial value. 
+    		If the type TF has a no-argument constructor, then the value of the new returned
+    		object satisfies its contract. Otherwise, the value of the new returned object 
+    		satisfies the contract of the constructor call that was used to initialize this.
+    		<ul class="sub1">
+    			<li> TF stands for the type family.</li>
+    			<li> newInstance() must return whatever type family you are implementing.</li>
+    			</ul>
+    		
+    		</li>
+    		<li>Ensures: is_initial(newInstance)</li>
+    		
+    		
+    	</ul>
+    	clear()
+    	<ul>
+    		<li>Calls this.createNewRep()
+    			<ul class="sub1">
+    			<li>createNewRep() initializes instance variables.</li>
+    			</ul>
+    		</li>
+    		
+    	</ul>
+    	transferFrom()
+    	<ul>
+    		<li>Copies instance variable values from this and restores this.</li>
+    	</ul>
+    </form>
+
+
+    <form style="padding-left: 12px;" target="_blank" action="http://web.cse.ohio-state.edu/software/2231/web-sw2/extras/slides/17a.Iterators.pdf">
+        <button type="submit">Implementing an Iterator</button>
+    </form>
+	
+	<form class="textbox">
+		Refer to slides:<hr>
+			<embed src="http://web.cse.ohio-state.edu/software/2231/web-sw2/extras/slides/17a.Iterators.pdf?" width="500" height="375" type="application/pdf">
+		<hr>
+		Main ideas: 
+		<ul>
+			<li>
+				Iterator allows a special way for sequential access. 
+			</li>
+			<li>
+				An interface that extends iterator can be iterated over with a FOR-EACH loop.
+			</li>
+			<li>The Basics:
+				<ul class="sub1">
+					<li>Iterator has 'hasNext()' returns an appropriate boolean.</li>
+					<li>The 'next()' method returns the next element.</li>
+				</ul>
+			
+			</li>
+			
+		</ul>
+	</form>
+
+    <form style="padding-left: 12px;" target="_blank" action="http://web.cse.ohio-state.edu/software/2231/web-sw2/extras/slides/18.Tree-Theory.pdf">
+        <button type="submit">Mathematical Tree Notation</button>
+    </form>
+    
+    <form class="textbox">
+    
+    	A tree is a recursive structure representing a collection of nodes. 
+    	<ul>
+    		<li>The mathematical model of a tree consists of a root node and a string of the subtrees. </li>
+    		
+    	</ul>
+    	<img src="data/TMM5.png">
+    	<img src="data/TMM6.png">
+    	<hr>
+    	Size, Height, Labels
+    	<ul>
+    		<li>Size: total number of nodes |t| </li>
+    		<li>Height: number of nodes on the longest path from root to leaf ht(t)</li>
+    		<li>Labels: the set whose elements are the labels of t (no duplicates or ordering) labels(t)</li>
+    		
+    	</ul>
+    </form>
+
+
+    <form style="padding-left: 108px;" target="_blank" action="http://web.cse.ohio-state.edu/software/2231/web-sw2/extras/slides/19.Tree.pdf">
+        <button type="submit">Tree</button>
+    </form>
+
+	<form class="textbox">
+		<img src="data/TREE2.png">
+		<img src="data/TREE10.png">
+		<img src="data/TREE15.png">
+		<img src="data/TREE16.png">
+		<img src="data/TREE18.png">
+		<br>
+		Disassemble does the reverse of this. 
+	</form>
+
+    <form style="padding-left: 108px;" target="_blank" action="http://web.cse.ohio-state.edu/software/2231/web-sw2/extras/slides/20.BugsWorld-Intro.pdf">
+        <button type="submit">BugsWorld Introduction</button>
+    </form>
+
+		<form class="textbox">
+			BugsWorld compiler has:
+			<ul>
+				<li>
+				Tokenizer
+				<ul class="sub1">
+					<li>Separate into tokens (Strings without separators).</li>
+				</ul>
+				</li>
+				<li>
+				Parser
+				<ul class="sub1">
+					<li>Make a Program object from tokens.</li>
+				</ul>
+				</li>
+				<li>
+				Code Generator
+				<ul class="sub1">
+					<li>Make code of ints that can be run.</li>
+				</ul>
+				</li>
+			</ul>
+		</form>
+
+    <form style="padding-left: 12px;" target="_blank" action="http://web.cse.ohio-state.edu/software/2231/web-sw2/extras/slides/21.Abstract-Syntax-Trees.pdf">
+        <button type="submit">Abstract Syntax Trees</button>
+    </form>
+	
+	<form class="textbox">
+		<embed src="http://web.cse.ohio-state.edu/software/2231/web-sw2/extras/slides/21.Abstract-Syntax-Trees.pdf?" width="500" height="375" type="application/pdf">
+	</form>
+
+    <form style="padding-left: 108px;" target="_blank" action="http://web.cse.ohio-state.edu/software/2231/web-sw2/extras/slides/22.Statement.pdf">
+        <button type="submit">Statement</button>
+    </form>
+
+	<form class="textbox">
+		<iframe src="http://web.cse.ohio-state.edu/software/common/doc/components/statement/Statement.html"></iframe>
+		<hr>
+		<code>
+		Note that Statement can be represented as a Tree of StatementLabel. 
+		<br>
+		Where StatementLabel has a Kind, a Condition, and an instruction (String).
+		<br>
+		The Kinds are:
+		<ul>
+			<li>BLOCK</li>
+			<li>IF</li>
+			<li>IF_ELSE</li>
+			<li>WHILE</li>
+			<li>CALL</li>
+		</ul>
+		<hr>
+		Be sure to see slides for enum information (slide 14).
+	
+		</code>
+	</form>
+
+    <form style="padding-left: 108px;" target="_blank" action="http://web.cse.ohio-state.edu/software/2231/web-sw2/extras/slides/23.Program.pdf">
+        <button type="submit">Program</button>
+    </form>
+
+	<form class="textbox">
+		<code>
+			Program represents a complete BL program.
+			<br>
+			The program is represented by name (String)	, context (Map<String, Statement>)
+				, and body (Statement).
+			<ul>
+				<li>name is required to be an IDENTIFIER.</li>
+				<li>context maps instruction names with the content of those instructions.</li>
+				<li>body represents the main part of the program after BEGIN.</li>
+			</ul>
+		</code>
+	</form>
+
+    <form style="padding-left: 108px;" target="_blank" action="http://web.cse.ohio-state.edu/software/2231/web-sw2/extras/slides/24.Using-Statement-Program.pdf">
+        <button type="submit">Using Statement and Program</button>
+    </form>
+
+
+    <form style="padding-left: 204px;" target="_blank" action="http://web.cse.ohio-state.edu/software/2231/web-sw2/extras/slides/25.Context-Free-Grammars.pdf">
+        <button type="submit">Context-Free Grammars</button>
+    </form>
+    <form class="textbox">
+    	<code>
+    		A CFG is a set of specific formation rules for a language.
+    		<br>
+    		These rules can be used to determine whether or not sun supposed use of that
+    		language is syntactically correct. 
+    	</code>
+    	<br>
+    	The lecture uses the following CFG as a representation.
+    	<br>
+    	<img src="data/CFG9.png">
+    	<br>
+    	What this means is: 
+    	<ul>
+    		<li>real-const has four representations.</li>
+    		<li>The first representation has digit-seq . digit-seq.
+    			<ul class="sub1">
+    				<li>the spaces separate pieces</li>
+    				<li>This representation means a digit-seq + '.' + digit-seq.</li>
+    			</ul>
+    		</li>
+    	</ul>
+    	<code>
+    		These can be represented by what is called a "derivation tree":
+    	</code>
+    	<br>
+    	<img src="data/CFG36.png">
+    </form>
+
+          <iframe src="https://mattshoe81.github.io/softwareglossary.io/index.html"></iframe>
+    </body>
+    
+    
+</html>
+
